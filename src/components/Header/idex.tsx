@@ -5,8 +5,16 @@ import { FiShoppingCart, FiUser } from "react-icons/fi";
 import Logo from "../../../public/logo.png"
 import Image from "next/image";
 import { FaRegBell } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Header(){
+    const router = useRouter();
+    
+        function handleClick() {
+            router.push(`/login/`)
+        }
+
+
     return (
         <header className="sticky top-0 z-50 bg-[#111418]/95 backdrop-blur-sm w-full border-b">
             <div className="w-full flex h-16 items-center justify-between">
@@ -46,7 +54,9 @@ export default function Header(){
                         width="w-10"
                         className="h-10 hover:bg-[#5593f7] hover:text-[#111418]"
                     >
-                        <FiUser />
+                        <FiUser 
+                            onClick={handleClick}
+                        />
                     </CustomButton>
                 </div>
             </div>
