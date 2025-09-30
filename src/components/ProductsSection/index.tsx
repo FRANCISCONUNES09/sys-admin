@@ -3,11 +3,17 @@ import CustomButton from "../CustomButton";
 import { Product } from "@/interfaces/Product";
 import ProductCard from "../ProductCard";
 import requestApi from "@/helpers/requestApi";
-import { toast } from "react-toastify";
 import CustomToast from "@/helpers/customToast";
+import { useRouter } from "next/navigation";
 
 export default function ProductsSection() {
     const [products, setProducts] = useState<Product[]>([])
+
+    const router = useRouter();
+    
+        function handleClick() {
+            router.push(`/products/`)
+        }
 
     useEffect(() => {
         async function fetchProducts(){
@@ -36,7 +42,7 @@ export default function ProductsSection() {
                 <h2 className="text-2xl font-bold">
                     Produtos em Destaque
                 </h2>
-                <CustomButton variant="outline" width="w-[100px]">
+                <CustomButton onClick={handleClick} variant="outline" width="w-[100px]">
                     Ver todos
                 </CustomButton>
             </div>
