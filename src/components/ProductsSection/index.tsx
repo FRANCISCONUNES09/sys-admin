@@ -2,35 +2,28 @@ import { useEffect, useState } from "react";
 import CustomButton from "../CustomButton";
 import { Product } from "@/interfaces/Product";
 import ProductCard from "../ProductCard";
+import instance from "@/services/api";
 import requestApi from "@/helpers/requestApi";
-import CustomToast from "@/helpers/customToast";
-import { useRouter } from "next/navigation";
+import customToast from "@/helpers/customToast";
 
-export default function ProductsSection() {
+export default function ProductsSection(){
     const [products, setProducts] = useState<Product[]>([])
-
-    const router = useRouter();
-    
-        function handleClick() {
-            router.push(`/products/`)
-        }
 
     useEffect(() => {
         async function fetchProducts(){
-            try {
-                const response = await requestApi({
-                    url: "/products",
-                    method: "GET"
-                })
+           try {
+            const response = await requestApi({
+                url: "/products",
+                method: "GET"
+            })
 
-                setProducts(response.data)
-            } catch (error) {
-                console.error(error)
-                CustomToast.error({
-                    message: "Erro ao buscar produtos"
-                })
-            }
-            
+            setProducts(response.data)
+           } catch (error) {
+            console.error(error)
+            customToast.error({
+                message: "Erro ao buscar produtos"
+            })
+           }
         }
 
         fetchProducts()
@@ -42,20 +35,26 @@ export default function ProductsSection() {
                 <h2 className="text-2xl font-bold">
                     Produtos em Destaque
                 </h2>
-                <CustomButton onClick={handleClick} variant="outline" width="w-[100px]">
+                <CustomButton variant="outline" width="w-[100px]">
                     Ver todos
                 </CustomButton>
             </div>
 
             <div className="grid grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 gap-6">
-                {products.map((product) => {
+                {
+                    products.length > 0 ? (
+                        products.map((product) => {
                     return (
-                        <ProductCard
+                        <ProductCard 
                             key={product.id}
-                            product={product} 
+                            product={product}
                         />
                     )
-                })}
+                })
+                    ) : (
+                        <p>Sem produtos</p>
+                    )
+                }
             </div>
         </section>
     )

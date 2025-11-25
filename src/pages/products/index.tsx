@@ -13,7 +13,7 @@ import { IoSearch } from "react-icons/io5";
 
 export default function Products() {
   return (
-    <PageWrapper.Root>
+    <PageWrapper.Root withAuth={true}>
       <PageWrapper.Header />
 
       <PageWrapper.content

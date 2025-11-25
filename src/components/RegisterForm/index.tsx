@@ -5,8 +5,67 @@ import { GoLock } from "react-icons/go";
 import CustomButton from "../CustomButton";
 import { PiGoogleChromeLogo } from "react-icons/pi";
 import Link from "next/link";
+import { useState } from "react";
+import CustomToast from "@/helpers/customToast";
+import requestApi from "@/helpers/requestApi";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm(){
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+
+    const router = useRouter()
+
+    async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        if (!name || !email || !password || !confirmPassword) {
+            CustomToast.error({
+                message: "Preencha todos os campos"
+            })
+            return
+        }
+
+        if (password !== confirmPassword) {
+            CustomToast.error({
+                message: "As senhas não coincidem"
+            })
+            return
+        }
+
+        if (password.length < 8) {
+            CustomToast.error({
+                message: "A senha deve ter no mínimo 8 caracteres"
+            })
+            return
+        }
+
+        try {
+            await requestApi({
+                url: "/users",
+                method: "POST",
+                data: {
+                    name,
+                    email,
+                    password,
+                    role: "user"
+                }
+            })
+
+            CustomToast.success({
+                message: "Conta criada com sucesso"
+            })
+
+            router.push("/login")
+        } catch (error) {
+            console.error(error)
+            CustomToast.error({
+                message: "Erro ao criar conta"
+            })
+        }
+    }
     return (
         <div className="w-full max-w-md mx-auto bg-gradient-to-br 
          from-[#181b20cc] to-[#1d2025e6] border border-[#2c313a]/50
@@ -20,12 +79,14 @@ export default function RegisterForm(){
                     <p>Preencha os dados para criar sua conta</p>
                 </div>
                 <form 
-                    onSubmit={() => {}}
+                    onSubmit={handleRegister}
                     className="space-y-6"
                 >
                     <CustomInput 
                         label="Nome Completo"
                         type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         placeholder="Seu nome Completo"
                         icon={<FiUser />}
                         required={true}
@@ -33,6 +94,8 @@ export default function RegisterForm(){
                     <CustomInput 
                         label="Email"
                         type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="seu@gmail.com"
                         icon={<CiMail/>}
                         required={true}
@@ -40,13 +103,17 @@ export default function RegisterForm(){
                     <CustomInput 
                         label="Senha"
                         type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="password"
                         icon={<GoLock/>}
                         required={true}
                     />
                     <CustomInput 
-                        label="Comfirmar a senha"
+                        label="Confirmar a senha"
                         type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="password"
                         icon={<GoLock/>}
                         required={true}
