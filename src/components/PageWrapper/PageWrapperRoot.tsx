@@ -1,47 +1,24 @@
-import requestApi from "@/helpers/requestApi"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface PageWrapperRootProps {
-    children: React.ReactNode,
-    withAuth?: boolean
+  children: React.ReactNode;
+  withAuth?: boolean;
 }
 
-export default function PageWrapperRoot({ children, withAuth = false }: PageWrapperRootProps) {
-    const router = useRouter()
-
+export default function PageWrapperRoot({
+  children,
+  withAuth = false,
+}: PageWrapperRootProps) {
+  const router = useRouter();
+  const { status } = useSession();
+  
   useEffect(() => {
-    if (!withAuth) {
-        return
-    }
-
-    const token = localStorage.getItem("token")
-    
-    if (!token) {
+    if (status === "unauthenticated" && withAuth) {
       router.push("/login")
     }
+  }, [status])
 
-    async function heartBeat() {
-      try {
-        const response = await requestApi({
-          url: "/profile",
-          method: "GET"
-        })
-
-        localStorage.setItem("user", JSON.stringify(response.data))
-      } catch (error) {
-        localStorage.removeItem("token")
-        localStorage.removeItem("user")
-        console.error(error)
-        router.push("/login")
-      }
-    }
-    heartBeat()
-  }, [])
-
-    return (
-        <div className="min-h-screen bg-[#111418]">
-            {children}
-        </div>
-    )
+  return <div className="min-h-screen bg-[#111418]">{children}</div>;
 }

@@ -6,8 +6,8 @@ import { useState } from "react";
 import CustomInput from "../Custominpunt";
 import { CiMail } from "react-icons/ci";
 import CustomToast from "@/helpers/customToast";
-import requestApi from "@/helpers/requestApi";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm(){
     const [email, setEmail] = useState("")
@@ -26,23 +26,21 @@ export default function LoginForm(){
         }
 
         try {
-            const response = await requestApi({
-                url: "/login",
-                method: "POST",
-                data: {
-                    email,
-                    password
-                }
+            const result = await signIn("credentials", {
+                email,
+                password,
+                redirect: false
             })
 
-            //set local Storage
-            localStorage.setItem("token", response.data.token)
-            localStorage.setItem("user", JSON.stringify(response.data.user))
+            if (result?.error) {
+                return CustomToast.error({
+                    message: "Erro ao fazer login. Verifique suas credenciais."
+                })
+            }
 
             CustomToast.success({
                 message: "Login realizado com sucesso"
             })
-
             router.push("/")
         }catch (error: any) {
             console.error(error)

@@ -5,7 +5,6 @@ import { FiLogOut, FiShoppingCart, FiUser } from "react-icons/fi";
 import Logo from "../../../public/logo.png";
 import Image from "next/image";
 import { FaRegBell } from "react-icons/fa";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -16,15 +15,19 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import Link from "next/link";
-import useSession from "@/hooks/use-session";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
-  
-
   const router = useRouter();
 
-  const { session, habdleSignOut } = useSession();
+  const { data: session } = useSession();
 
+  async function handleSignOut() {
+    await signOut({
+      redirect: true,
+      callbackUrl: "/login",
+    });
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-[#111418]/95 backdrop-blur-sm w-full border-b">
@@ -103,7 +106,9 @@ export default function Header() {
                         <p className="text-white font-medium text-sm">
                           {session?.user?.name}
                         </p>
-                        <p className="text-gray-400 text-xs">{session?.user?.email}</p>
+                        <p className="text-gray-400 text-xs">
+                          {session?.user?.email}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -115,20 +120,20 @@ export default function Header() {
                         className="flex items-center px-4 py-2 text-sm text-gray-300
                         hover:bg-[#2c313a] hover:text-white transition-colors cursor-pointer"
                       >
-                        <FiUser className="mr-3 w-4 h-4"/>
+                        <FiUser className="mr-3 w-4 h-4" />
                         Meu Perfil
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
 
                   <DropdownMenuSeparator />
-                  
+
                   <DropdownMenuItem
-                    onSelect={habdleSignOut}
+                    onSelect={handleSignOut}
                     className="flex items-center px-5 py-2 text-sm text-red-400
                     hover:bg-[#2c313a] hover:text-red-300 transition-colors cursor-pointer"
                   >
-                    <FiLogOut className="mr-3 w-4 h-4"/>
+                    <FiLogOut className="mr-3 w-4 h-4" />
                     Sair
                   </DropdownMenuItem>
                 </DropdownMenuContent>
